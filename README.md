@@ -4,6 +4,8 @@
 
 项目使用 React、Vite、TypeScript 与 React Router Framework Mode。内容页面会在构建阶段预渲染为独立 HTML，适合部署到腾讯云 COS、CloudBase、CDN 或其他静态托管平台。
 
+本仓库定位为公开的网站模板与核心代码。建议把真实个人网站维护在独立私有仓库中，并将本仓库配置为 `upstream`：社区贡献进入公开模板，个人资料、未发布文章与部署配置留在私有实例。
+
 ## 当前功能
 
 - AI 科技感响应式首页
@@ -69,6 +71,25 @@ featured: false
 - 关于页照片与真实经历
 - 域名确定后的 canonical、Open Graph、Sitemap 和 RSS 地址
 
+## 公开模板与私人网站
+
+推荐使用两个边界清晰的仓库：
+
+```text
+personal-ai-portfolio（公开）  →  组件、主题、博客引擎、示例内容
+my-personal-site（私有）       →  真实资料、未发布内容、部署配置
+```
+
+在私人网站仓库中添加本项目作为上游：
+
+```bash
+git remote add upstream https://github.com/liang0417/personal-ai-portfolio.git
+git fetch upstream
+git merge upstream/main
+```
+
+不要把 API Key、部署令牌或其他秘密放进 React/Vite 前端。以 `VITE_` 开头的变量会进入浏览器构建结果，不适合保存秘密；需要密钥的能力应由服务端接口代理，并配置鉴权、限流与配额。
+
 ## 中国大陆部署路线
 
 推荐链路：
@@ -82,3 +103,5 @@ GitHub → CI 构建 → build/client → 腾讯云 COS/CloudBase → 国内 CDN
 ## 开源与内容版权
 
 程序代码使用 [MIT License](LICENSE)。文章、个人简历、照片、项目描述和个人品牌素材不随代码使用 MIT 授权，详见 [CONTENT_LICENSE.md](CONTENT_LICENSE.md)。
+
+参与开发前请阅读 [CONTRIBUTING.md](CONTRIBUTING.md)，安全问题请按 [SECURITY.md](SECURITY.md) 的方式报告。
