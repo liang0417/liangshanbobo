@@ -1,6 +1,24 @@
 # Personal AI Portfolio
 
-一个面向文章、个人简历、项目案例和未来实验的开源个人网站。
+> 面向 AI 独立开发者与一人公司的开源个人网站系统：用一个站点承载作品、文章、实验和长期个人品牌。
+
+<p align="center">
+  <img src="./docs/preview.png" alt="Personal AI Portfolio 首页预览" width="100%" />
+</p>
+
+<p align="center">
+  <strong>React 19 · Vite 8 · TypeScript · React Router</strong><br />
+  AI 科技感视觉、Markdown 内容系统、静态预渲染与清晰的公开模板 / 私人实例边界
+</p>
+
+<p align="center">
+  <a href="#当前功能">功能</a> ·
+  <a href="#本地开发">本地开发</a> ·
+  <a href="#公开模板与私人网站">维护架构</a> ·
+  <a href="CONTRIBUTING.md">参与贡献</a>
+</p>
+
+**项目状态：** 开源模板可本地运行和构建；正式在线演示待域名、ICP备案与国内部署链路完成后开放。本仓库不会用本地预览冒充线上 Demo。
 
 项目使用 React、Vite、TypeScript 与 React Router Framework Mode。内容页面会在构建阶段预渲染为独立 HTML，适合部署到腾讯云 COS、CloudBase、CDN 或其他静态托管平台。
 
