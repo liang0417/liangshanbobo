@@ -27,7 +27,7 @@ export default function ArticleDetail({ loaderData }: Route.ComponentProps) {
         <div className="tag-list">{article.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
         <h1>{article.title}</h1>
         <p className="lede">{article.summary}</p>
-        <div className="article-byline"><span>{article.publishedAt}</span><span>{article.readingTime}</span><span>{siteConfig.name}</span></div>
+        <div className="article-byline"><span>{article.publishedAt}</span><span>{article.readingTime}</span><span>{siteConfig.pages.articleAuthor || siteConfig.name}</span></div>
       </header>
       <article className="prose">
         <ReactMarkdown remarkPlugins={[remarkGfm]}>{article.content}</ReactMarkdown>

@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import type { Route } from "./+types/home";
+import { HeroVisual } from "~/components/hero-visual";
 import { ProjectCard } from "~/components/project-card";
 import { experience, projects, siteConfig } from "~/data/site";
 import { getArticles } from "~/lib/content.server";
@@ -33,18 +34,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           </div>
         </div>
 
-        <div className="hero-visual" aria-label="抽象智能节点网络">
-          <div className="visual-grid" />
-          <div className="orbit orbit-one"><i /></div>
-          <div className="orbit orbit-two"><i /></div>
-          <div className="core-orb">
-            <span className="core-label">BUILDING</span>
-            <strong>AI × PRODUCT</strong>
-            <small>Human-centered systems</small>
-          </div>
-          <div className="visual-note note-top">TRACE / 0027</div>
-          <div className="visual-note note-bottom">STATUS · ONLINE</div>
-        </div>
+        <HeroVisual variant={siteConfig.home.heroVisual} />
       </section>
 
       <section className="now-strip section-frame" aria-label="当前状态">
@@ -98,10 +88,23 @@ export default function Home({ loaderData }: Route.ComponentProps) {
         </div>
       </section>
 
-      <section className="contact-cta section-frame">
-        <p className="eyebrow">LET'S BUILD SOMETHING MEANINGFUL</p>
-        <h2>有值得一起做的事情？<br /><span>我们聊聊。</span></h2>
-        <a className="button button-primary" href={`mailto:${siteConfig.email}`}>发一封邮件 <span>↗</span></a>
+      <section id="contact" className="contact-cta section-frame" aria-labelledby="contact-heading">
+        <p className="eyebrow">{siteConfig.contact.eyebrow}</p>
+        <h2 id="contact-heading">{siteConfig.contact.title}<br /><span>{siteConfig.contact.titleAccent}</span></h2>
+        <div className="contact-content">
+          <div className="contact-copy">
+            <p className="contact-intro">{siteConfig.contact.intro}</p>
+            <p className="contact-note">{siteConfig.contact.formNote}</p>
+            <div className="hero-actions">
+              <a className="button button-primary" href={`mailto:${siteConfig.email}`}>发送邮件 <span>↗</span></a>
+              {siteConfig.contact.bookingUrl ? <a className="button button-secondary" href={siteConfig.contact.bookingUrl} target="_blank" rel="noreferrer">预约交流</a> : null}
+              {siteConfig.contact.resumeUrl ? <a className="button button-secondary" href={siteConfig.contact.resumeUrl} target="_blank" rel="noreferrer">查看简历</a> : null}
+            </div>
+          </div>
+          <div className="contact-options">
+            <div className="tag-list">{siteConfig.contact.collaborationTypes.map((type) => <span key={type}>{type}</span>)}</div>
+          </div>
+        </div>
       </section>
     </main>
   );

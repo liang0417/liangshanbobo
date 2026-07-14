@@ -1,23 +1,37 @@
 import { randomUUID } from "node:crypto";
-import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
+import { mkdir, readFile, readdir, rename, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import type { Plugin } from "vite";
+import matter from "gray-matter";
 
 const projectRoot = process.cwd();
 const activeConfigPath = join(projectRoot, "app/data/site.config.json");
 const setupTemplatePath = join(projectRoot, "tools/setup/index.html");
+const articlesPath = join(projectRoot, "app/content/articles");
 const storePath = join(projectRoot, ".portfolio-config");
 const profilesPath = join(storePath, "profiles");
 const historyPath = join(storePath, "history");
 const indexPath = join(storePath, "index.json");
 const historyLimit = 30;
+const schemaVersion = 3;
+const articleSlugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 type ConfigIndex = {
   version: number;
   activeProfileId: string;
   profiles: { id: string; name: string; updatedAt: string }[];
   history: { id: string; label: string; createdAt: string }[];
+};
+
+type ArticleRecord = {
+  slug: string;
+  title: string;
+  summary: string;
+  publishedAt: string;
+  readingTime: string;
+  tags: string[];
+  featured: boolean;
 };
 
 async function readJson<T>(path: string): Promise<T> {
@@ -35,6 +49,80 @@ function requireText(value: unknown, field: string) {
   if (typeof value !== "string" || !value.trim()) throw new Error(`${field} 不能为空。`);
 }
 
+function parseArticle(slug: string, data: Record<string, unknown>): ArticleRecord {
+  return {
+    slug,
+    title: String(data.title ?? slug),
+    summary: String(data.summary ?? ""),
+    publishedAt: String(data.publishedAt ?? ""),
+    readingTime: String(data.readingTime ?? "5 min"),
+    tags: Array.isArray(data.tags) ? data.tags.map(String) : [],
+    featured: Boolean(data.featured),
+  };
+}
+
+async function listArticles(): Promise<ArticleRecord[]> {
+  const entries = await readdir(articlesPath, { withFileTypes: true });
+  const articles = await Promise.all(entries.filter((entry) => entry.isFile() && entry.name.endsWith(".md")).map(async (entry) => {
+    const slug = entry.name.replace(/\.md$/, "");
+    const source = matter(await readFile(join(articlesPath, entry.name), "utf8"));
+    return parseArticle(slug, source.data);
+  }));
+  return articles.sort((left, right) => right.publishedAt.localeCompare(left.publishedAt));
+}
+
+async function readArticleSource(slug: string) {
+  const filePath = join(articlesPath, `${slug}.md`);
+  const source = matter(await readFile(filePath, "utf8"));
+  return { filePath, content: source.content, data: source.data as Record<string, unknown> };
+}
+
+function validateArticle(value: unknown): asserts value is ArticleRecord {
+  if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("文章格式无效。");
+  const article = value as Record<string, unknown>;
+  if (typeof article.slug !== "string" || !articleSlugPattern.test(article.slug)) throw new Error("文章标识无效。");
+  requireText(article.title, "文章标题");
+  requireText(article.summary, "文章摘要");
+  requireText(article.publishedAt, "发布日期");
+  requireText(article.readingTime, "阅读时长");
+  if (!Array.isArray(article.tags) || article.tags.some((tag) => typeof tag !== "string")) throw new Error("文章标签必须是文本列表。");
+  if (typeof article.featured !== "boolean") throw new Error("首页精选必须是布尔值。");
+}
+
+function projectId(name: unknown, index: number) {
+  const slug = String(name ?? "project").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "project";
+  return `${slug}-${index + 1}`;
+}
+
+function normalizeConfig(config: unknown) {
+  const next = structuredClone(config) as { schemaVersion?: number; site?: Record<string, unknown>; projects?: Record<string, unknown>[]; experience?: unknown[] };
+  if (!next || typeof next !== "object" || Array.isArray(next)) throw new Error("配置格式无效。");
+  const site = next.site ?? {};
+  next.schemaVersion = schemaVersion;
+  next.projects = (next.projects ?? []).map((project, index) => ({ ...project, id: project.id || projectId(project.name, index), url: project.url ?? "" }));
+  next.experience ??= [];
+  site.navigation = Array.isArray(site.navigation)
+    ? (site.navigation as { href?: unknown }[]).filter((item) => item?.href !== "/contact")
+    : [];
+  site.home = { heroVisual: "three-d", ...(site.home as Record<string, unknown> | undefined) };
+  site.about ??= { description: "", paragraphs: [], skills: [] };
+  site.pages = { articlesDescription: "", projectsDescription: "", articleAuthor: site.name ?? "", ...(site.pages as Record<string, unknown> | undefined) };
+  site.footer ??= { title: "", subtitle: "" };
+  site.contact = {
+    eyebrow: "LET'S WORK TOGETHER",
+    title: "有值得一起做的事情？",
+    titleAccent: "我们聊聊。",
+    intro: `欢迎联系 ${site.name ?? "我"}，一起讨论产品、工程和长期创造。`,
+    collaborationTypes: ["AI 产品共创", "技术咨询", "内容交流"],
+    bookingUrl: "",
+    resumeUrl: "",
+    formNote: "可通过邮件发来你的背景、目标和时间安排。",
+    ...(site.contact as Record<string, unknown> | undefined),
+  };
+  next.site = site;
+  return next;
+}
+
 function validateConfig(config: unknown) {
   if (!config || typeof config !== "object" || Array.isArray(config)) throw new Error("配置格式无效。");
   const value = config as { site?: Record<string, unknown>; projects?: unknown[]; experience?: unknown[] };
@@ -48,9 +136,11 @@ function validateConfig(config: unknown) {
   const home = value.site.home as Record<string, unknown> | undefined;
   requireText(home?.headline, "首页标题");
   requireText(home?.intro, "首页简介");
+  if (home?.heroVisual !== "three-d" && home?.heroVisual !== "legacy") throw new Error("首页视觉样式无效。");
 
   for (const project of value.projects) {
     const item = project as Record<string, unknown> | undefined;
+    requireText(item?.id, "项目 ID");
     requireText(item?.name, "项目名称");
     requireText(item?.description, "项目说明");
     requireText(item?.impact, "项目成果");
@@ -97,7 +187,8 @@ async function snapshot(index: ConfigIndex, config: unknown, label: string) {
 
 async function currentState() {
   const index = await ensureStore();
-  return { config: await readJson(activeConfigPath), activeProfileId: index.activeProfileId, profiles: index.profiles, history: index.history };
+  const [config, articles] = await Promise.all([readJson(activeConfigPath), listArticles()]);
+  return { config: normalizeConfig(config), activeProfileId: index.activeProfileId, profiles: index.profiles, history: index.history, articles };
 }
 
 function sendJson(response: ServerResponse, statusCode: number, value: unknown) {
@@ -113,7 +204,7 @@ async function readRequestBody(request: IncomingMessage) {
     if (size > 1024 * 1024) throw new Error("请求内容过大。");
     chunks.push(chunk);
   }
-  return JSON.parse(Buffer.concat(chunks).toString("utf8")) as { config?: unknown; name?: unknown };
+  return JSON.parse(Buffer.concat(chunks).toString("utf8")) as { config?: unknown; name?: unknown; article?: unknown };
 }
 
 function isTrustedRequest(request: IncomingMessage) {
@@ -140,11 +231,12 @@ async function handleApi(request: IncomingMessage, response: ServerResponse) {
     const active = await readJson(activeConfigPath);
 
     if (url.pathname === "/api/setup/save") {
-      validateConfig(payload.config);
+      const nextConfig = normalizeConfig(payload.config);
+      validateConfig(nextConfig);
       const profile = index.profiles.find((item) => item.id === index.activeProfileId);
       await snapshot(index, active, `保存前：${profile?.name ?? "当前方案"}`);
-      await writeJsonAtomically(activeConfigPath, payload.config);
-      await writeJsonAtomically(profileFile(index.activeProfileId), payload.config);
+      await writeJsonAtomically(activeConfigPath, nextConfig);
+      await writeJsonAtomically(profileFile(index.activeProfileId), nextConfig);
       if (profile) profile.updatedAt = new Date().toISOString();
       await writeJsonAtomically(indexPath, index);
       return sendJson(response, 200, await currentState());
@@ -167,7 +259,7 @@ async function handleApi(request: IncomingMessage, response: ServerResponse) {
     if (activateMatch) {
       const profile = index.profiles.find((item) => item.id === activateMatch[1]);
       if (!profile) throw new Error("找不到该配置方案。");
-      const nextConfig = await readJson(profileFile(profile.id));
+      const nextConfig = normalizeConfig(await readJson(profileFile(profile.id)));
       validateConfig(nextConfig);
       await snapshot(index, active, `切换前：${index.profiles.find((item) => item.id === index.activeProfileId)?.name ?? "当前方案"}`);
       await writeJsonAtomically(activeConfigPath, nextConfig);
@@ -181,12 +273,22 @@ async function handleApi(request: IncomingMessage, response: ServerResponse) {
     if (restoreMatch) {
       const entry = index.history.find((item) => item.id === restoreMatch[1]);
       if (!entry) throw new Error("找不到该历史版本。");
-      const restored = await readJson(historyFile(entry.id));
+      const restored = normalizeConfig(await readJson(historyFile(entry.id)));
       validateConfig(restored);
       await snapshot(index, active, `恢复前：${entry.label}`);
       await writeJsonAtomically(activeConfigPath, restored);
       await writeJsonAtomically(profileFile(index.activeProfileId), restored);
       await writeJsonAtomically(indexPath, index);
+      return sendJson(response, 200, await currentState());
+    }
+
+    const articleMatch = url.pathname.match(/^\/api\/setup\/articles\/([a-z0-9]+(?:-[a-z0-9]+)*)$/);
+    if (articleMatch) {
+      validateArticle(payload.article);
+      if (payload.article.slug !== articleMatch[1]) throw new Error("文章标识不匹配。");
+      const source = await readArticleSource(articleMatch[1]);
+      const { slug: _slug, ...metadata } = payload.article;
+      await writeFile(source.filePath, matter.stringify(source.content, { ...source.data, ...metadata }), "utf8");
       return sendJson(response, 200, await currentState());
     }
 

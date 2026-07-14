@@ -29,6 +29,7 @@ export function SiteHeader() {
           ))}
         </nav>
         <div className="header-actions">
+          <Link className="header-contact" to="/#contact" reloadDocument>联系我 <span aria-hidden="true">↗</span></Link>
           <button className="command-trigger" type="button" data-command-open>
             <span>搜索</span>
             <kbd>⌘ K</kbd>

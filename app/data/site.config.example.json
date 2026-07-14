@@ -25,6 +25,7 @@
       }
     ],
     "home": {
+      "heroVisual": "three-d",
       "availability": "AVAILABLE FOR IDEAS",
       "eyebrow": "AI INDEPENDENT BUILDER / LIANGSHANBOBO",
       "headline": "构建值得信任的系统，",
@@ -67,13 +68,28 @@
     },
     "pages": {
       "articlesDescription": "关于 AI 工程、产品、知识系统与长期创造的文章。",
-      "projectsDescription": "AI、知识工程与产品交付项目案例。"
+      "projectsDescription": "AI、知识工程与产品交付项目案例。",
+      "articleAuthor": "Liangshanbobo"
     },
     "footer": {
       "title": "构建值得信任的系统。",
       "subtitle": "也把值得长期保存的故事，留在其中。"
     },
-    "repositoryUrl": "https://github.com/liang0417/liangshanbobo"
+    "repositoryUrl": "https://github.com/liang0417/liangshanbobo",
+    "contact": {
+      "eyebrow": "LET'S WORK TOGETHER",
+      "title": "有值得一起做的事情？",
+      "titleAccent": "我们聊聊。",
+      "intro": "欢迎讨论 AI 产品、知识系统、独立开发与长期创造。",
+      "collaborationTypes": [
+        "AI 产品共创",
+        "技术咨询",
+        "内容交流"
+      ],
+      "bookingUrl": "",
+      "resumeUrl": "",
+      "formNote": "可通过邮件发来你的背景、目标和时间安排。"
+    }
   },
   "projects": [
     {
@@ -87,7 +103,9 @@
         "Local-first"
       ],
       "status": "开放构建",
-      "featured": true
+      "featured": true,
+      "id": "shanbo-context-1",
+      "url": ""
     },
     {
       "name": "Knowledge Workbench",
@@ -99,7 +117,9 @@
         "PostgreSQL"
       ],
       "status": "已交付",
-      "featured": false
+      "featured": false,
+      "id": "knowledge-workbench-2",
+      "url": ""
     },
     {
       "name": "Agent Lab",
@@ -111,7 +131,9 @@
         "Evaluation"
       ],
       "status": "实验中",
-      "featured": false
+      "featured": false,
+      "id": "agent-lab-3",
+      "url": ""
     }
   ],
   "experience": [
@@ -130,5 +152,6 @@
       "role": "Systems Builder",
       "summary": "把服务端、数据、产品与交付经验沉淀为可复用的构建能力。"
     }
-  ]
+  ],
+  "schemaVersion": 3
 }
