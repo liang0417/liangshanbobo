@@ -4,6 +4,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  Link,
   isRouteErrorResponse,
   useRouteError,
 } from "react-router";
@@ -57,9 +58,9 @@ export function ErrorBoundary() {
       <p className="eyebrow">SYSTEM / 404</p>
       <h1>{title}</h1>
       <p className="lede">可能是链接发生了变化，也可能是这部分内容仍在构建中。</p>
-      <a className="button button-primary" href="/">
+      <Link className="button button-primary" to="/">
         返回首页
-      </a>
+      </Link>
     </main>
   );
 }

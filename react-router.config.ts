@@ -15,7 +15,8 @@ function getArticlePaths() {
 }
 
 export default {
-  ssr: false,
+  basename: process.env.GITHUB_ACTIONS ? "/personal-ai-portfolio" : "/",
+  ssr: true,
   prerender: [
     "/",
     "/articles",

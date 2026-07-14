@@ -1,3 +1,5 @@
+import { Link } from "react-router";
+
 export function SiteFooter() {
   return (
     <footer className="site-footer">
@@ -8,7 +10,7 @@ export function SiteFooter() {
       <div className="footer-links">
         <a href="mailto:hello@example.com">Email</a>
         <a href="https://github.com/" rel="noreferrer">GitHub</a>
-        <a href="/projects">Projects</a>
+        <Link to="/projects">Projects</Link>
       </div>
       <p className="footer-meta">© 2026 YOUR.NAME · Built with React & Vite</p>
     </footer>

@@ -1,14 +1,14 @@
-import { NavLink } from "react-router";
+import { Link, NavLink } from "react-router";
 import { navigation } from "~/data/site";
 import { ThemeToggle } from "./theme-toggle";
 
 export function SiteHeader() {
   return (
     <header className="site-header">
-      <a className="brand" href="/" aria-label="返回首页">
+      <Link className="brand" to="/" aria-label="返回首页">
         <span className="brand-mark">A</span>
         <span>YOUR.NAME</span>
-      </a>
+      </Link>
       <nav className="desktop-nav" aria-label="主要导航">
         {navigation.map((item) => (
           <NavLink key={item.href} to={item.href} end={item.href === "/"}>
