@@ -21,8 +21,8 @@ export default function Home({ loaderData }: Route.ComponentProps) {
       <section className="hero section-frame">
         <div className="hero-copy">
           <div className="availability"><span /> AVAILABLE FOR IDEAS</div>
-          <p className="eyebrow">AI INDEPENDENT BUILDER / ONE-PERSON COMPANY</p>
-          <h1>构建 AI 产品，<br /><span>也构建值得信任的系统。</span></h1>
+          <p className="eyebrow">AI INDEPENDENT BUILDER / LIANGSHANBOBO</p>
+          <h1>构建值得信任的系统，<br /><span>也把值得长期保存的故事，留在其中。</span></h1>
           <p className="hero-lede">我关注 Agent、RAG、知识工程与完整产品交付，把模糊想法变成可理解、可验证、可持续迭代的真实产品。</p>
           <div className="hero-actions">
             <Link className="button button-primary" to="/projects" reloadDocument>查看作品 <span>↗</span></Link>
@@ -35,23 +35,23 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           </div>
         </div>
 
-        <div className="hero-visual" aria-label="抽象智能节点网络">
+        <div className="hero-visual" aria-label="抽象双节点与蝶翼轨迹">
           <div className="visual-grid" />
           <div className="orbit orbit-one"><i /></div>
           <div className="orbit orbit-two"><i /></div>
           <div className="core-orb">
             <span className="core-label">BUILDING</span>
-            <strong>AI × PRODUCT</strong>
-            <small>Human-centered systems</small>
+            <strong>SYSTEMS × STORIES</strong>
+            <small>Build with care</small>
           </div>
-          <div className="visual-note note-top">TRACE / 0027</div>
-          <div className="visual-note note-bottom">STATUS · ONLINE</div>
+          <div className="visual-note note-top">TRACE / LSB-01</div>
+          <div className="visual-note note-bottom">TWIN SIGNALS · ONLINE</div>
         </div>
       </section>
 
       <section className="now-strip section-frame" aria-label="当前状态">
         <div><span className="pulse" /> {siteIdentity.wordmark}</div>
-        <p>正在构建 AI 产品、开放实验与一人公司的长期系统</p>
+        <p>正在构建可验证的产品，也为重要的时刻留出位置。</p>
         <span className="mono">SHANGHAI · UTC+8</span>
       </section>
 
