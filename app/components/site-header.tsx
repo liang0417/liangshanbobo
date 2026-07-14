@@ -5,13 +5,13 @@ import { ThemeToggle } from "./theme-toggle";
 export function SiteHeader() {
   return (
     <header className="site-header">
-      <Link className="brand" to="/" aria-label="返回首页">
+      <Link className="brand" to="/" aria-label="返回首页" reloadDocument>
         <span className="brand-mark">A</span>
         <span>YOUR.NAME</span>
       </Link>
       <nav className="desktop-nav" aria-label="主要导航">
         {navigation.map((item) => (
-          <NavLink key={item.href} to={item.href} end={item.href === "/"}>
+          <NavLink key={item.href} to={item.href} end={item.href === "/"} reloadDocument>
             {item.label}
           </NavLink>
         ))}

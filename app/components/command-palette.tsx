@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router";
 import { navigation, projects } from "~/data/site";
 
 const commands = [
@@ -11,7 +10,6 @@ export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -63,7 +61,8 @@ export function CommandPalette() {
               type="button"
               onClick={() => {
                 setOpen(false);
-                navigate(item.href);
+                const path = item.href === "/" ? "" : item.href.slice(1);
+                window.location.assign(`${import.meta.env.BASE_URL}${path}`);
               }}
             >
               <span>{item.label}</span>

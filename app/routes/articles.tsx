@@ -26,7 +26,7 @@ export default function Articles({ loaderData }: Route.ComponentProps) {
       </div>
       <div className="article-cards">
         {loaderData.articles.map((article) => (
-          <Link className="article-card" key={article.slug} to={`/articles/${article.slug}`}>
+          <Link className="article-card" key={article.slug} to={`/articles/${article.slug}`} reloadDocument>
             <div className="article-card-top"><span>{article.publishedAt}</span><span>{article.readingTime}</span></div>
             <h2>{article.title}</h2>
             <p>{article.summary}</p>

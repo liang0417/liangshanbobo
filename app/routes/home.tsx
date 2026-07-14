@@ -25,8 +25,8 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           <h1>构建 AI 产品，<br /><span>也构建值得信任的系统。</span></h1>
           <p className="hero-lede">我关注 Agent、RAG、知识工程与完整产品交付，把模糊想法变成可理解、可验证、可持续迭代的真实产品。</p>
           <div className="hero-actions">
-            <Link className="button button-primary" to="/projects">查看作品 <span>↗</span></Link>
-            <Link className="button button-secondary" to="/articles">阅读文章</Link>
+            <Link className="button button-primary" to="/projects" reloadDocument>查看作品 <span>↗</span></Link>
+            <Link className="button button-secondary" to="/articles" reloadDocument>阅读文章</Link>
           </div>
           <div className="hero-proof">
             <span><strong>03+</strong> 核心项目</span>
@@ -58,7 +58,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
       <section className="section section-frame">
         <div className="section-heading">
           <div><p className="eyebrow">SELECTED WORK / 01</p><h2>精选作品</h2></div>
-          <Link className="text-link" to="/projects">查看全部 <span>↗</span></Link>
+          <Link className="text-link" to="/projects" reloadDocument>查看全部 <span>↗</span></Link>
         </div>
         <div className="project-grid">
           <ProjectCard project={projects[0]} large />
@@ -71,11 +71,11 @@ export default function Home({ loaderData }: Route.ComponentProps) {
       <section className="section section-frame articles-section">
         <div className="section-heading">
           <div><p className="eyebrow">WRITING / 02</p><h2>最近文章</h2></div>
-          <Link className="text-link" to="/articles">文章归档 <span>↗</span></Link>
+          <Link className="text-link" to="/articles" reloadDocument>文章归档 <span>↗</span></Link>
         </div>
         <div className="article-list">
           {loaderData.articles.map((article, index) => (
-            <Link className="article-row" key={article.slug} to={`/articles/${article.slug}`}>
+            <Link className="article-row" key={article.slug} to={`/articles/${article.slug}`} reloadDocument>
               <span className="article-index">{String(index + 1).padStart(2, "0")}</span>
               <div><h3>{article.title}</h3><p>{article.summary}</p></div>
               <div className="article-meta"><span>{article.publishedAt}</span><span>{article.readingTime}</span></div>
