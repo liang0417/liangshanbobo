@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.2 - 2026-07-15
+
+- Add a reduced-motion-safe LSB / ZYT signal easter egg triggered from the header mark.
+
 ## 0.4.1 - 2026-07-14
 
 - 以 LSB 为主标识升级个人品牌表达，首页加入克制的双节点与青紫轨迹视觉。

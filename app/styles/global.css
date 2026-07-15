@@ -96,8 +96,26 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 
 .brand { display: inline-flex; align-items: center; gap: 0.7rem; font-size: 0.77rem; letter-spacing: 0.12em; font-weight: 700; }
+.brand-signal { display: grid; padding: 0; border: 0; background: transparent; cursor: pointer; }
 .brand-mark { width: 30px; height: 30px; display: grid; place-items: center; border: 1px solid var(--line-bright); color: var(--accent); clip-path: polygon(25% 0, 100% 0, 75% 100%, 0 100%); font-size: 0.55rem; letter-spacing: 0.04em; position: relative; text-shadow: 0 0 14px rgba(114, 242, 209, 0.35); }
 .brand-mark::after { content: ""; position: absolute; right: 3px; bottom: 4px; width: 3px; height: 3px; border-radius: 50%; background: var(--accent-2); box-shadow: 0 0 9px var(--accent-2); }
+.brand-signal:hover .brand-mark { border-color: var(--accent); box-shadow: 0 0 20px rgba(114, 242, 209, 0.18); }
+.signal-burst { position: fixed; left: calc(50% - 130px); top: 78px; width: 260px; height: 120px; pointer-events: none; z-index: 80; animation: signal-fade 1.5s ease-out both; }
+.signal-burst::before, .signal-burst::after { content: ""; position: absolute; inset: 24px 34px; border: 1px solid var(--accent); border-radius: 50%; transform: rotate(24deg); box-shadow: 0 0 24px rgba(114, 242, 209, 0.22); }
+.signal-burst::after { border-color: var(--accent-2); transform: rotate(-24deg); box-shadow: 0 0 24px rgba(167, 139, 250, 0.2); }
+.signal-burst span { position: absolute; inset: 53px 0 auto; z-index: 1; color: var(--text); text-align: center; font: 0.62rem/1 ui-monospace, monospace; letter-spacing: 0.18em; text-shadow: 0 0 16px var(--accent); }
+.signal-burst i { position: absolute; left: 50%; top: 50%; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 12px var(--accent); animation: signal-particle 1.2s ease-out both; }
+.signal-burst i:nth-of-type(2n) { background: var(--accent-2); box-shadow: 0 0 12px var(--accent-2); }
+.signal-burst i:nth-of-type(1) { --x: -92px; --y: -31px; }
+.signal-burst i:nth-of-type(2) { --x: -60px; --y: 36px; }
+.signal-burst i:nth-of-type(3) { --x: -20px; --y: -48px; }
+.signal-burst i:nth-of-type(4) { --x: 25px; --y: 44px; }
+.signal-burst i:nth-of-type(5) { --x: 65px; --y: -40px; }
+.signal-burst i:nth-of-type(6) { --x: 99px; --y: 21px; }
+.signal-burst i:nth-of-type(7) { --x: 43px; --y: -55px; }
+.signal-burst i:nth-of-type(8) { --x: -42px; --y: 54px; }
+@keyframes signal-particle { to { transform: translate(var(--x), var(--y)) scale(0); opacity: 0; } }
+@keyframes signal-fade { 0%, 55% { opacity: 1; } 100% { opacity: 0; } }
 .desktop-nav { display: flex; gap: 1.8rem; font-size: 0.88rem; color: var(--text-soft); }
 .desktop-nav a { position: relative; padding: 0.75rem 0; transition: color 180ms ease; }
 .desktop-nav a::after { content: ""; position: absolute; left: 0; right: 100%; bottom: 0.35rem; height: 1px; background: var(--accent); transition: right 180ms ease; }
@@ -293,7 +311,7 @@ kbd { font: 0.68rem/1 ui-monospace, SFMono-Regular, Consolas, monospace; color: 
 
 @media (max-width: 620px) {
   .site-header { height: 68px; }
-  .brand > span:last-child { display: none; }
+  .brand > a { display: none; }
   .command-trigger span { display: none; }
   .hero { padding-top: 4.5rem; }
   .hero h1, .page-hero h1, .about-hero h1 { font-size: clamp(2.55rem, 13vw, 4rem); }
