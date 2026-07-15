@@ -68,6 +68,10 @@ button:disabled { cursor: not-allowed; opacity: .52; }
 .article-config-row > header span, .article-config-row > header strong { display: block; }
 .article-config-row > header span { color: var(--accent); font: .6rem/1.4 ui-monospace, monospace; }
 .article-config-row > header strong { margin-top: .2rem; font-size: .96rem; }
+.article-form-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
+.article-slug-field .field { margin-bottom: .35rem; }
+.field input[aria-invalid="true"] { border-color: #ef8b9c; }
+.field-error { margin: 0 0 .9rem; color: #ef8b9c; font-size: .7rem; line-height: 1.5; }
 .article-config-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 .9rem; }
 .article-config-fields .field:last-child { grid-column: 1 / -1; }
 .remove { width: 28px; height: 28px; margin-top: 1.65rem; border: 1px solid var(--line); background: transparent; color: var(--text-dim); font-size: 1.2rem; line-height: 1; }

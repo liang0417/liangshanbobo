@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { mkdir, readFile, readdir, rename, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import type { IncomingMessage, ServerResponse } from "node:http";
-import type { Plugin } from "vite";
+import type { Plugin, ViteDevServer } from "vite";
 import matter from "gray-matter";
 
 const projectRoot = process.cwd();
@@ -75,6 +75,19 @@ async function readArticleSource(slug: string) {
   const filePath = join(articlesPath, `${slug}.md`);
   const source = matter(await readFile(filePath, "utf8"));
   return { filePath, content: source.content, data: source.data as Record<string, unknown> };
+}
+
+async function createArticle(article: ArticleRecord) {
+  const filePath = join(articlesPath, `${article.slug}.md`);
+  const { slug: _slug, ...metadata } = article;
+  try {
+    await writeFile(filePath, matter.stringify("在这里开始写作。\n", metadata), { encoding: "utf8", flag: "wx" });
+  } catch (error) {
+    if (error && typeof error === "object" && "code" in error && error.code === "EEXIST") {
+      throw new Error("已存在相同 URL 标识的文章。");
+    }
+    throw error;
+  }
 }
 
 function validateArticle(value: unknown): asserts value is ArticleRecord {
@@ -218,7 +231,7 @@ function isTrustedRequest(request: IncomingMessage) {
   }
 }
 
-async function handleApi(request: IncomingMessage, response: ServerResponse) {
+async function handleApi(request: IncomingMessage, response: ServerResponse, server: ViteDevServer) {
   const url = new URL(request.url ?? "/", "http://127.0.0.1");
   if (!isTrustedRequest(request)) return sendJson(response, 403, { error: "只允许本机配置向导访问。" });
 
@@ -282,6 +295,14 @@ async function handleApi(request: IncomingMessage, response: ServerResponse) {
       return sendJson(response, 200, await currentState());
     }
 
+    if (url.pathname === "/api/setup/articles") {
+      validateArticle(payload.article);
+      await createArticle(payload.article);
+      sendJson(response, 200, await currentState());
+      setTimeout(() => { void server.restart(); }, 0);
+      return;
+    }
+
     const articleMatch = url.pathname.match(/^\/api\/setup\/articles\/([a-z0-9]+(?:-[a-z0-9]+)*)$/);
     if (articleMatch) {
       validateArticle(payload.article);
@@ -306,7 +327,7 @@ export function localConfigPlugin(): Plugin {
       server.middlewares.use(async (request, response, next) => {
         const url = new URL(request.url ?? "/", "http://127.0.0.1");
         if (url.pathname.startsWith("/api/setup/")) {
-          await handleApi(request, response);
+          await handleApi(request, response, server);
           return;
         }
         if (request.method === "GET" && (url.pathname === "/setup" || url.pathname === "/setup/")) {
