@@ -4,6 +4,7 @@ import { dirname, join } from "node:path";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import type { Plugin, ViteDevServer } from "vite";
 import matter from "gray-matter";
+import { normalizeConfig, validateConfig } from "./site-config.mjs";
 
 const projectRoot = process.cwd();
 const activeConfigPath = join(projectRoot, "app/data/site.config.json");
@@ -14,7 +15,6 @@ const profilesPath = join(storePath, "profiles");
 const historyPath = join(storePath, "history");
 const indexPath = join(storePath, "index.json");
 const historyLimit = 30;
-const schemaVersion = 3;
 const articleSlugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 type ConfigIndex = {
@@ -102,68 +102,6 @@ function validateArticle(value: unknown): asserts value is ArticleRecord {
   if (typeof article.featured !== "boolean") throw new Error("首页精选必须是布尔值。");
 }
 
-function projectId(name: unknown, index: number) {
-  const slug = String(name ?? "project").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "project";
-  return `${slug}-${index + 1}`;
-}
-
-function normalizeConfig(config: unknown) {
-  const next = structuredClone(config) as { schemaVersion?: number; site?: Record<string, unknown>; projects?: Record<string, unknown>[]; experience?: unknown[] };
-  if (!next || typeof next !== "object" || Array.isArray(next)) throw new Error("配置格式无效。");
-  const site = next.site ?? {};
-  next.schemaVersion = schemaVersion;
-  next.projects = (next.projects ?? []).map((project, index) => ({ ...project, id: project.id || projectId(project.name, index), url: project.url ?? "" }));
-  next.experience ??= [];
-  site.navigation = Array.isArray(site.navigation)
-    ? (site.navigation as { href?: unknown }[]).filter((item) => item?.href !== "/contact")
-    : [];
-  site.home = { heroVisual: "three-d", ...(site.home as Record<string, unknown> | undefined) };
-  site.about ??= { description: "", paragraphs: [], skills: [] };
-  site.pages = { articlesDescription: "", projectsDescription: "", articleAuthor: site.name ?? "", ...(site.pages as Record<string, unknown> | undefined) };
-  site.footer ??= { title: "", subtitle: "" };
-  site.contact = {
-    eyebrow: "LET'S WORK TOGETHER",
-    title: "有值得一起做的事情？",
-    titleAccent: "我们聊聊。",
-    intro: `欢迎联系 ${site.name ?? "我"}，一起讨论产品、工程和长期创造。`,
-    collaborationTypes: ["AI 产品共创", "技术咨询", "内容交流"],
-    bookingUrl: "",
-    resumeUrl: "",
-    formNote: "可通过邮件发来你的背景、目标和时间安排。",
-    ...(site.contact as Record<string, unknown> | undefined),
-  };
-  next.site = site;
-  return next;
-}
-
-function validateConfig(config: unknown) {
-  if (!config || typeof config !== "object" || Array.isArray(config)) throw new Error("配置格式无效。");
-  const value = config as { site?: Record<string, unknown>; projects?: unknown[]; experience?: unknown[] };
-  if (!value.site || !Array.isArray(value.projects) || !Array.isArray(value.experience)) throw new Error("配置缺少站点、项目或经历数据。");
-
-  requireText(value.site.name, "姓名");
-  requireText(value.site.role, "职业定位");
-  requireText(value.site.email, "邮箱");
-  requireText(value.site.githubUrl, "GitHub 地址");
-  requireText(value.site.description, "站点描述");
-  const home = value.site.home as Record<string, unknown> | undefined;
-  requireText(home?.headline, "首页标题");
-  requireText(home?.intro, "首页简介");
-  if (home?.heroVisual !== "three-d" && home?.heroVisual !== "legacy") throw new Error("首页视觉样式无效。");
-
-  for (const project of value.projects) {
-    const item = project as Record<string, unknown> | undefined;
-    requireText(item?.id, "项目 ID");
-    requireText(item?.name, "项目名称");
-    requireText(item?.description, "项目说明");
-    requireText(item?.impact, "项目成果");
-    requireText(item?.status, "项目状态");
-    if (!Array.isArray(item?.stack) || item.stack.some((entry) => typeof entry !== "string")) {
-      throw new Error("项目技术栈必须是文本列表。");
-    }
-  }
-}
-
 function profileFile(id: string) {
   return join(profilesPath, `${id}.json`);
 }
@@ -201,7 +139,9 @@ async function snapshot(index: ConfigIndex, config: unknown, label: string) {
 async function currentState() {
   const index = await ensureStore();
   const [config, articles] = await Promise.all([readJson(activeConfigPath), listArticles()]);
-  return { config: normalizeConfig(config), activeProfileId: index.activeProfileId, profiles: index.profiles, history: index.history, articles };
+  const normalized = normalizeConfig(config);
+  validateConfig(normalized);
+  return { config: normalized, activeProfileId: index.activeProfileId, profiles: index.profiles, history: index.history, articles };
 }
 
 function sendJson(response: ServerResponse, statusCode: number, value: unknown) {
@@ -220,12 +160,21 @@ async function readRequestBody(request: IncomingMessage) {
   return JSON.parse(Buffer.concat(chunks).toString("utf8")) as { config?: unknown; name?: unknown; article?: unknown };
 }
 
+function isLoopbackHost(hostname: string) {
+  return hostname === "127.0.0.1" || hostname === "localhost" || hostname === "::1";
+}
+
+function isLoopbackAddress(address: string | undefined) {
+  return address === "127.0.0.1" || address === "::1" || address === "::ffff:127.0.0.1";
+}
+
 function isTrustedRequest(request: IncomingMessage) {
+  if (!isLoopbackAddress(request.socket.remoteAddress)) return false;
   const origin = request.headers.origin;
   if (!origin) return true;
   try {
     const { hostname } = new URL(origin);
-    return hostname === "127.0.0.1" || hostname === "localhost" || hostname === "::1";
+    return isLoopbackHost(hostname);
   } catch {
     return false;
   }
