@@ -76,17 +76,32 @@ featured: false
 ---
 ```
 
-项目和经历的示例数据位于 `app/data/site.ts`。
+公开示例配置位于 `app/data/site.config.example.json`。实际生效的本地配置是 `app/data/site.config.json`，不会被 Git 跟踪。
 
 ## 个性化清单
 
-Fork 为你自己的站点时需要替换：
+运行 `npm run dev`、`npm run setup`、`npm run build` 或 `npm run typecheck` 时，项目会在本地配置不存在的情况下自动从示例创建它。之后可在 `/setup` 或直接编辑 `app/data/site.config.json`，集中替换：
 
-- `app/data/site.ts` 中的品牌名称与 GitHub 地址
-- 对外联系入口
-- 首页个人定位和项目数据
-- 关于页照片与真实经历
-- 域名确定后的 canonical、Open Graph、Sitemap 和 RSS 地址
+- 姓名、品牌首字母、职业定位和默认 SEO 描述
+- 邮箱与 GitHub 地址
+- 首页个人定位、当前状态、关键信息与 2D / 3D 视觉样式
+- 文章列表的标题、摘要、日期、标签与首页精选状态（正文继续使用 Markdown）
+- 关于页的简介与技能
+- 页脚文案
+
+项目和经历也保留在同一文件。示例配置可以安全提交到公开仓库；真实配置与本地历史不会被 Git 跟踪。请注意：Git 忽略只是不提交文件，部署时实际参与构建的 `site.config.json` 仍可能公开可见，因此不要在其中放入密钥、令牌或任何私人敏感信息。之后再替换照片，并在域名确定后补齐 canonical、Open Graph、Sitemap 和 RSS 地址。
+
+### 本地配置向导
+
+不想手动编辑 JSON 时，启动开发服务器：
+
+```bash
+npm run dev
+```
+
+然后打开 `http://localhost:5173/setup`。向导仅在本地开发时可用，可以编辑当前配置、创建和切换命名方案，并在每次保存、切换或恢复前自动生成历史快照。`npm run setup` 仍可作为启动同一开发环境的快捷命令。
+
+活动配置仍保存在 `app/data/site.config.json`，是唯一会参与生产构建的配置文件，但默认被 Git 忽略。公开仓库只提交 `app/data/site.config.example.json`；其他方案与历史快照保存在 `.portfolio-config/`，同样不会被跟踪或部署到网站。
 
 ## 公开模板与私人网站
 

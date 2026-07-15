@@ -1,10 +1,10 @@
 import { Link } from "react-router";
 import type { Route } from "./+types/articles";
-import { siteIdentity } from "~/data/site";
+import { siteConfig } from "~/data/site";
 import { getArticles } from "~/lib/content.server";
 
 export function meta() {
-  return [{ title: `文章 — ${siteIdentity.name}` }, { name: "description", content: "关于 AI 工程、产品、知识系统与长期创造的文章。" }];
+  return [{ title: `文章 — ${siteConfig.name}` }, { name: "description", content: siteConfig.pages.articlesDescription }];
 }
 
 export function loader() {
@@ -19,7 +19,7 @@ export default function Articles({ loaderData }: Route.ComponentProps) {
       <header className="page-hero">
         <p className="eyebrow">WRITING / FIELD NOTES</p>
         <h1>写下思考，<span>留下过程。</span></h1>
-        <p className="lede">关于 AI 工程、产品设计、复杂系统和把事情真正做完的实践记录。</p>
+        <p className="lede">{siteConfig.pages.articlesDescription}</p>
       </header>
       <div className="filter-row" aria-label="文章主题">
         <span className="filter-active">全部</span>

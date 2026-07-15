@@ -3,10 +3,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "react-router dev",
-    "build": "react-router build && node scripts/prerender.mjs",
+    "prepare-config": "node scripts/ensure-site-config.mjs",
+    "dev": "npm run prepare-config && react-router dev",
+    "setup": "npm run prepare-config && react-router dev",
+    "build": "npm run prepare-config && react-router build && node scripts/prerender.mjs",
     "preview": "vite preview",
-    "typecheck": "react-router typegen && tsc --noEmit"
+    "typecheck": "npm run prepare-config && react-router typegen && tsc --noEmit"
   },
   "dependencies": {
     "gray-matter": "^4.0.3",

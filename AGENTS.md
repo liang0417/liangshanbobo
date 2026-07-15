@@ -21,6 +21,10 @@
 - Check responsive behavior and reduced-motion support for visual changes.
 - Do not claim mainland deployment is complete until the domain, ICP filing, CDN, HTTPS, and live access have been verified.
 
+## Git commits
+
+- Git 提交信息必须使用中文。
+
 ## Publishing safety
 
 - Keep secrets and personal sensitive data out of the public repository.
