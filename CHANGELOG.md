@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.0 - 2026-09-08
+
+- 将首页改为内容优先的个人索引，首屏直接呈现身份、当前方向、精选作品与最近文章。
+- 重新设计全站视觉语言，采用暖石墨底色、克制的陶土色强调和更舒适的内容密度。
+- 收紧作品、文章与关于页的标题尺度，并完善窄屏与减少动态效果设置下的阅读体验。
+
 ## 0.4.2 - 2026-07-15
 
 - Add a reduced-motion-safe LSB / ZYT signal easter egg triggered from the header mark.

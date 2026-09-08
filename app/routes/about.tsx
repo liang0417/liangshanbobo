@@ -10,7 +10,8 @@ export default function About() {
       <header className="about-hero">
         <div>
           <p className="eyebrow">ABOUT / THE HUMAN IN THE LOOP</p>
-          <h1>在技术、产品与真实问题之间，<span>持续搭桥。</span></h1>
+          <h1>关于我</h1>
+          <p className="lede">在技术、产品与真实问题之间持续搭桥。</p>
         </div>
         <div className="portrait-placeholder" aria-label="Liangshanbobo identity signal">
           <span>{siteIdentity.wordmark}</span><small>NO PORTRAIT · SIGNAL ONLY</small>

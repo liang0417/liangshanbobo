@@ -10,8 +10,8 @@ export default function Projects() {
     <main id="main-content" className="page section-frame">
       <header className="page-hero">
         <p className="eyebrow">PROJECTS / SHIPPED & EXPERIMENTAL</p>
-        <h1>作品不是截图，<span>而是解决问题的证据。</span></h1>
-        <p className="lede">这里记录背景、决策、实现、结果与复盘。首版先展示项目摘要，后续逐个补齐完整案例页和在线 Demo。</p>
+        <h1>作品</h1>
+        <p className="lede">我正在构建和已经交付的 AI 产品。这里记录它们解决的问题、采用的方法和当前状态。</p>
       </header>
       <div className="projects-page-grid">
         {projects.map((project, index) => (
