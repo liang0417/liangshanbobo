@@ -1,6 +1,6 @@
 import type { Config } from "@react-router/dev/config";
 
 export default {
-  basename: "/",
+  basename: "/liangshanbobo/",
   ssr: true,
 } satisfies Config;

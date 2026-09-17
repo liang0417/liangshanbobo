@@ -4,7 +4,7 @@ import { createRequestHandler } from "react-router";
 import * as build from "../build/server/index.js";
 
 const handleRequest = createRequestHandler(build, "production");
-const base = build.basename === "/" ? "" : build.basename;
+const base = build.basename === "/" ? "" : build.basename.replace(/\/$/, "");
 const articlePaths = (await readdir("app/content/articles"))
   .filter((file) => file.endsWith(".md"))
   .map((file) => `/articles/${file.replace(/\.md$/, "")}`);
