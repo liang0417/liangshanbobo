@@ -15,7 +15,7 @@ import { SiteHeader } from "~/components/site-header";
 import "~/styles/global.css";
 
 export const links: Route.LinksFunction = () => [
-  { rel: "icon", href: "/liangshanbobo/favicon.svg", type: "image/svg+xml" },
+  { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
